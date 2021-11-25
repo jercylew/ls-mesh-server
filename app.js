@@ -6,6 +6,7 @@ var logger = require('morgan');
 const cors = require('cors');
 
 var indexRouter = require('./routes/index');
+var bebebusAppFrontRouter = require('./routes/bebebus-app-front');
 var usersRouter = require('./routes/users');
 
 var app = express();
@@ -22,8 +23,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors({origin: '*', methods: ['GET','POST']}));
 
-app.use('/', indexRouter);
+app.use('/bebebus-app-front', bebebusAppFrontRouter);
 app.use('/users', usersRouter);
+app.use('/', indexRouter);
+
 
 //Demo user token
 app.post('/login', (req, res) => {
