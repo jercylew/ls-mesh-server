@@ -25,7 +25,7 @@ app.use(cors({origin: '*', methods: ['GET','POST']}));
 
 app.use('/bebebus-app-front', bebebusAppFrontRouter);
 app.use('/users', usersRouter);
-app.use('/', indexRouter);
+// app.use('/', indexRouter);
 
 
 //Demo user token

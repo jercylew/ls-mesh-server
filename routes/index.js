@@ -7,6 +7,7 @@ var path = require('path');
 //  res.render('index', { title: 'Express' });
 //});
 router.get('/*', function(req, res, next) {
+  console.log('Index rout ...');
   res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
