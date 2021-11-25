@@ -7,6 +7,7 @@ const cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var bebebusAppFrontRouter = require('./routes/bebebus-app-front');
+var bebebusCmsCenterRouter = require('./routes/bebebus-cms');
 var usersRouter = require('./routes/users');
 
 var app = express();
@@ -24,8 +25,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({origin: '*', methods: ['GET','POST']}));
 
 app.use('/bebebus-app-front', bebebusAppFrontRouter);
+app.use('/bebebus-cms-center', bebebusCmsCenterRouter);
 app.use('/users', usersRouter);
-// app.use('/', indexRouter);
 
 
 //Demo user token

@@ -3,7 +3,8 @@ var router = express.Router();
 var path = require('path');
 
 router.get('/*', function(req, res, next) {
-  res.sendFile(path.join(__dirname, '../public/', 'index.html'));
+  console.log('Bebebus backend cms rout ...');
+  res.sendFile(path.join(__dirname, '../public/bebebus-cms-center', 'index.html'));
 });
 
 module.exports = router;
