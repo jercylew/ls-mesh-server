@@ -40,7 +40,6 @@ app.post('/login', (req, res) => {
   } else {
     res.send({});
   }
-  
 });
 
 // catch 404 and forward to error handler
