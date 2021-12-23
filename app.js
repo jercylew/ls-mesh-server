@@ -8,7 +8,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 require('dotenv/config');
 
-const mogoServerUrl = 'mongodb+srv://ls-admin:tkt1qazm%2C.%2F@cluster-jercy.hxoov.azure.mongodb.net/ls-test?retryWrites=true&w=majority'
+//const mogoServerUrl = 'mongodb+srv://ls-admin:tkt1qazm%2C.%2F@cluster-jercy.hxoov.azure.mongodb.net/ls-test?retryWrites=true&w=majority'
+const mogoServerUrl = 'mongodb://127.0.0.1:27017/ls-test?retryWrites=true&w=majority&directConnection=true&serverSelectionTimeoutMS=2000'
 
 
 var indexRouter = require('./routes/index');
