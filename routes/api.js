@@ -67,7 +67,6 @@ router.post('/v1/test/bebebus/articles', async (req, res) => {
 router.get('/v1/test/bebebus/articles', async (req, res) => {
     try {
         const articles = await Article.find();
-        console.log(articles)
         let respData = {
             state: 0,
             message: 'Article retrived succeed!',
