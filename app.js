@@ -72,7 +72,12 @@ app.use(function(err, req, res, next) {
 
 // Connect to mogodb
 mongoose.connect(mogoServerUrl, { useUnifiedTopology: true, useNewUrlParser: true  }, (err) => {
-	console.log("Connected to DB: " + err);
+  if (err) {
+    console.log("Failed to connect to DB " + mogoServerUrl + ": " + err);
+  }
+  else {
+    console.log('Connect to DB succeed!');
+  }
 });
 
 module.exports = app;
