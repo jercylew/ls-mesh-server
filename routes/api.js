@@ -30,7 +30,6 @@ router.post('/v1/scenes/:id/devices/:dev_id', (req, res, next) => {
 /**********************************Test / Demo**********************************/
 // Create a article
 router.post('/v1/test/bebebus/articles', async (req, res) => {
-    // console.log('POST /v1/test/bebebus/articles, received: ' + JSON.stringify(req.body));
     const article = new Article({
         title: req.body.title,
         author: req.body.author,
@@ -66,7 +65,19 @@ router.post('/v1/test/bebebus/articles', async (req, res) => {
 // Get all articles
 router.get('/v1/test/bebebus/articles', async (req, res) => {
     try {
-        const articles = await Article.find();
+        const projection = {
+            title: 1,
+            author: 1,
+            abstract: 1,
+            cover: 1,
+            htmlContent: 0,
+            tag: 1,
+            originLink: 1,
+            originDeclaration: 1,
+            status: 1,
+        };
+        const articles = await Article.find(null, projection);
+        console.log(articles);
         let respData = {
             state: 0,
             message: 'Article retrived succeed!',
@@ -85,9 +96,20 @@ router.get('/v1/test/bebebus/articles', async (req, res) => {
 
 router.get('/v1/test/bebebus/articles/:id', async (req, res) => {
     try {
-        const article = await Article.findById(req.params.id);
+        const projection = {
+            title: 0,
+            author: 0,
+            abstract: 0,
+            cover: 0,
+            htmlContent: 1,
+            tag: 0,
+            originLink: 0,
+            originDeclaration: 0,
+            status: 0,
+        };
+        const article = await Article.findById(req.params.id, projection);
 
-        console.log(article)
+        console.log(article);
         let respData = {
             state: 0,
             message: 'Article retrived succeed!',
