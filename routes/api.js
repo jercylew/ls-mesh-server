@@ -70,7 +70,6 @@ router.get('/v1/test/bebebus/articles', async (req, res) => {
             author: 1,
             abstract: 1,
             cover: 1,
-            htmlContent: 0,
             tag: 1,
             originLink: 1,
             originDeclaration: 1,
@@ -97,15 +96,7 @@ router.get('/v1/test/bebebus/articles', async (req, res) => {
 router.get('/v1/test/bebebus/articles/:id', async (req, res) => {
     try {
         const projection = {
-            title: 0,
-            author: 0,
-            abstract: 0,
-            cover: 0,
             htmlContent: 1,
-            tag: 0,
-            originLink: 0,
-            originDeclaration: 0,
-            status: 0,
         };
         const article = await Article.findById(req.params.id, projection);
 
