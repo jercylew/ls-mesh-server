@@ -95,10 +95,7 @@ router.get('/v1/test/bebebus/articles', async (req, res) => {
 
 router.get('/v1/test/bebebus/articles/:id', async (req, res) => {
     try {
-        const projection = {
-            htmlContent: 1,
-        };
-        const article = await Article.findById(req.params.id, projection);
+        const article = await Article.findById(req.params.id);
 
         console.log(article);
         let respData = {
