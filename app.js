@@ -33,7 +33,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors({origin: '*', methods: ['GET','POST']}));
+app.use(cors({origin: '*', methods: ['GET','POST', 'PATCH', 'DELETE']}));
 app.use(bodyParser.json())
 
 app.use('/bebebus-app-front', bebebusAppFrontRouter);
