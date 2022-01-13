@@ -74,6 +74,7 @@ router.get('/v1/test/bebebus/articles', async (req, res) => {
             originLink: 1,
             originDeclaration: 1,
             status: 1,
+            date: 1
         };
         const articles = await Article.find(null, projection);
         console.log(articles);
