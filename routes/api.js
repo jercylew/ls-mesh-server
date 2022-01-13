@@ -66,15 +66,7 @@ router.post('/v1/test/bebebus/articles', async (req, res) => {
 router.get('/v1/test/bebebus/articles', async (req, res) => {
     try {
         const projection = {
-            title: 1,
-            author: 1,
-            abstract: 1,
-            cover: 1,
-            tag: 1,
-            originLink: 1,
-            originDeclaration: 1,
-            status: 1,
-            date: 1
+            htmlContent: 0,
         };
         const articles = await Article.find(null, projection);
         console.log(articles);
