@@ -15,6 +15,7 @@ const mogoServerUrl = 'mongodb://127.0.0.1:27017/ls-test?retryWrites=true&w=majo
 var indexRouter = require('./routes/index');
 var bebebusAppFrontRouter = require('./routes/bebebus-app-front');
 var bebebusCmsCenterRouter = require('./routes/bebebus-cms');
+var lsCloudPlatformRouter = require('./routes/ls-cloud-platform');
 var usersRouter = require('./routes/users');
 var apiRouter = require('./routes/api');
 
@@ -38,6 +39,7 @@ app.use(bodyParser.json())
 
 app.use('/bebebus-app-front', bebebusAppFrontRouter);
 app.use('/bebebus-cms-center', bebebusCmsCenterRouter);
+app.use('/ls-cloud-platform', lsCloudPlatformRouter);
 app.use('/users', usersRouter);
 app.use('/api', apiRouter);
 
