@@ -1,9 +1,10 @@
 // Restful api for Lengshuo Product
 // This implementaton is based on the specification 
 var express = require('express');
-var router = express.Router();
-
+const axios = require('axios');
 const Article = require('../models/Article');
+
+var router = express.Router();
 
 /**********************************Ble devices/**********************************/
 
@@ -159,5 +160,40 @@ router.delete('/v1/test/bebebus/articles/:id', async (req, res) => {
     }
 });
 
+router.post('/v1/test/current/seg-data', async (req, res) => {
+    console.log('Get request for current seg-data: ' + JSON.stringify(req.body));
+    try {
+        axios.post('http://127.0.0.1:3001/api/v1/current-seg-fig', {
+            id: req.body.id,
+            date: req.body.date,
+        })
+            .then(function (response) {
+                let respData = {
+                    state: 0,
+                    message: 'Get current segment data succeed!',
+                    data: response.data
+                };
+                res.json(respData);
+            })
+            .catch(function (error) {
+                console.log(error);
+
+                let respData = {
+                    state: 1,
+                    message: 'Error occurred while communicating to data server: ' + error,
+                    data: {}
+                };
+                res.json(respData)
+            });
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Error occurred while communicating to data server: ' + err,
+            data: {}
+        };
+        console.log('Error occurred while communicating to data server: ' + JSON.stringify(err))
+        res.json(respData)
+    }
+});
 
 module.exports = router;
