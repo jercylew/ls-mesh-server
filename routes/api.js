@@ -7,6 +7,7 @@ const CoverVideo = require('../models/CoverVideo');
 const InstallVideo = require('../models/InstallVideo');
 const Slide = require('../models/Slide');
 const WizardVideo = require('../models/WizardVideo');
+const StartScreen = require('../models/StartScreen');
 
 var router = express.Router();
 
@@ -615,6 +616,118 @@ router.delete('/v1/test/bebebus/wizard-videos/:id', async (req, res) => {
         res.json(respData);
     }
 });
+
+// Start Screen
+router.post('/v1/test/bebebus/start-screen', async (req, res) => {
+    const startScreen = new StartScreen({
+        startVideo: req.body.startVideo,
+        defaultBackground: req.body.defaultBackground
+    })
+
+    try {
+        const savedStartScreen = await startScreen.save();
+        let respData = {
+            state: 0,
+            message: 'Start screen saved succeed!',
+            data: savedStartScreen
+        };
+        console.log('Start screen save Ok!')
+        res.json(respData)
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Failed to save start screen: ' + err,
+            data: {}
+        };
+        console.log('Start screen save failed: ' + JSON.stringify(err))
+        res.json(respData)
+    }
+});
+
+router.get('/v1/test/bebebus/start-screen', async (req, res) => {
+    try {
+        const startScreens = await StartScreen.find();
+        console.log(startScreens);
+        let respData = {
+            state: 0,
+            message: 'Start screen retrived succeed!',
+            data: startScreens
+        };
+        res.json(respData);
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Failed to get start screen: ' + err,
+            data: []
+        };
+        res.json(respData);
+    }
+});
+
+router.get('/v1/test/bebebus/start-screen/:id', async (req, res) => {
+    try {
+        const startScreen = await StartScreen.findById(req.params.id);
+
+        console.log(startScreen);
+        let respData = {
+            state: 0,
+            message: 'Start screen retrived succeed!',
+            data: startScreen
+        };
+        res.json(respData);
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Failed to get start screen: ' + err,
+            data: {}
+        };
+        res.json(respData);
+    }
+});
+
+router.patch('/v1/test/bebebus/start-screen/:id', async (req, res) => {
+    try {
+        const updatedStartScreen = await StartScreen.updateOne({ _id: req.params.id }, {
+            $set: {
+                startVideo: req.body.startVideo,
+                defaultBackground: req.body.defaultBackground
+            }
+        });
+        let respData = {
+            state: 0,
+            message: 'Start screen update succeed',
+            data: updatedStartScreen
+        };
+        res.json(respData);
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Failed to update start screen: ' + err,
+            data: {}
+        };
+        res.json(respData);
+    }
+});
+
+router.delete('/v1/test/bebebus/start-screen/:id', async (req, res) => {
+    try {
+        const removedStartScreen = await StartScreen.remove({ _id: req.params.id });
+        let respData = {
+            state: 0,
+            message: 'Start screen deleted',
+            data: removedStartScreen
+        };
+        res.json(respData);
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Failed to delete start screen: ' + err,
+            data: {}
+        };
+        res.json(respData);
+    }
+});
+
 
 // Current Data Analysis
 router.post('/v1/test/current/seg-data', async (req, res) => {
