@@ -12,6 +12,11 @@ const CoverVideoSchema = mongoose.Schema({
         minLength: 0,
         maxLength: 20
     },
+    color: {
+        type: String,
+        minLength: 0,
+        maxLength: 20
+    },
     shortVideo: {
         type: String,
         required: true,

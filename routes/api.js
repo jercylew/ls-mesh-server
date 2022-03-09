@@ -170,6 +170,7 @@ router.post('/v1/test/bebebus/cover-videos', async (req, res) => {
     const coverVideo = new CoverVideo({
         title: req.body.title,
         subtitle: req.body.subtitle,
+        color: req.body.color,
         shortVideo: req.body.shortVideo,
         fullVideo: req.body.fullVideo,
         icons: req.body.icons
