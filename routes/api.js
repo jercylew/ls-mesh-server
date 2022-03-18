@@ -738,6 +738,9 @@ router.post('/v1/test/current/seg-data', async (req, res) => {
         axios.post('http://127.0.0.1:3001/api/v1/current-seg-fig', {
             id: req.body.id,
             date: req.body.date,
+            scene_id: req.body.scene_id,
+            type: req.body.type,
+            cluster: req.body.cluster,
         })
             .then(function (response) {
                 let respData = {
