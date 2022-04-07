@@ -2,6 +2,7 @@
 // This implementaton is based on the specification 
 var express = require('express');
 const axios = require('axios');
+var net = require('net');
 const Article = require('../models/Article');
 const CoverVideo = require('../models/CoverVideo');
 const InstallVideo = require('../models/InstallVideo');
@@ -19,14 +20,165 @@ router.get('/v1/scenes', function (req, res, next) {
 });
 
 // Get a scene
-router.get('/v1/scenes/:id', function (req, res, next) {
+router.get('/v1/scenes/:scene_id', function (req, res, next) {
     res.send('Implementing ...');
 });
 
-// Command
-router.post('/v1/scenes/:id/devices/:dev_id', (req, res, next) => {
-    console.log('Got body:', req.body);
+// List meshes
+router.get('/v1/scenes/:scene_id/meshes', function (req, res, next) {
     res.send('Implementing ...');
+});
+
+// Get a mesh
+router.get('/v1/scenes/:scene_id/meshes/:mesh_id', function (req, res, next) {
+    res.send('Implementing ...');
+});
+
+// List devices
+router.get('/v1/scenes/:scene_id/meshes/:mesh_id/devices', function (req, res, next) {
+    res.send('Implementing ...');
+});
+
+// Get a device
+router.get('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', function (req, res, next) {
+    res.send('Implementing ...');
+});
+
+
+// Control a device
+router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, next) => {
+    console.log('Got body:', req.body);
+
+    try {
+        let respData = {
+            state: 0,
+            message: '',
+            data: {}
+        };
+
+        const lsToken = req.headers['ls-token'];
+
+        //TODO: check user identity
+        console.log('Control device, ls-token: ', lsToken);
+
+        const cmd = req.body.cmd;
+        const sceneId = req.params.scene_id;
+        const meshId = req.params.mesh_id;
+        const devId = parseInt(req.params.dev_id);
+
+        console.log(`Trying to control device, scene: ${sceneId}, mesh: ${meshId}, device: ${devId}`);
+
+        let commandData = {
+            mesh_uuid: meshId ? meshId : '00000000000000000000000000000000',
+            bluetooth_address: devId,
+        };
+
+        if (cmd === 'on' || cmd === 'off') {
+            commandData.cmd = cmd
+        }
+        else if (cmd === 'dim') {
+            commandData.cmd = cmd;
+            let brightness = req.body.param;
+            if (brightness > 100) {
+                brightness = 100;
+            }
+            if (brightness < 0) {
+                brightness = 5;
+            }
+            commandData.data = brightness;
+        }
+        else {
+            console.log('Failed to control device: unknown cmd, current supported: on|off|dim');
+        }
+
+        if (commandData.cmd) {
+            if (sceneId === '86592b25f0-192255') {
+                let meshDevCommand = {
+                    topic: 'request',
+                    command: 'luminaire_control',
+                    data: commandData
+                };
+
+                // creating a custom socket client and connecting it....
+                var client = new net.Socket();
+                client.connect({
+                    // host: 'www.lengshuotech.com',
+                    port: 7200
+                });
+
+                client.on('connect', function () {
+                    console.log('Client: connection established with server');
+
+                    console.log('---------client details -----------------');
+                    var address = client.address();
+                    var port = address.port;
+                    var family = address.family;
+                    var ipaddr = address.address;
+                    console.log('Client is listening at port' + port);
+                    console.log('Client ip :' + ipaddr);
+                    console.log('Client is IP4/IP6 : ' + family);
+
+
+                    // writing data to server
+                    let connectHostCommand = {
+                        command: 'connect',
+                        data: {
+                            host_id: '86592b25f0'
+                        }
+                    };
+
+                    client.write(JSON.stringify(connectHostCommand) + '\n');
+                });
+                client.setEncoding('utf8');
+
+                client.on('data', function (data) {
+                    console.log('Data from server:' + data);
+                    if (data.includes('CONNECT_SUCCESS!')) {
+                        console.log('Now send command: ', JSON.stringify(meshDevCommand) + '\n');
+                        client.write(JSON.stringify(meshDevCommand) + '\n');
+                    }
+                    else if (data.indexOf('"result":"success"') > 0) {
+                        console.log('Send command succeed, now close the connection');
+                        client.end();
+                    }
+                });
+
+                client.on('close', function () {
+                    console.log('Connection closed');
+                });
+
+                respData = {
+                    state: 0,
+                    message: 'Send command to device succeed!',
+                    data: {}
+                };
+            }
+            else {
+                respData = {
+                    state: 1,
+                    message: 'Failed to send command to the device, scene not support remote control yet!',
+                    data: {}
+                };
+            }
+        }
+        else {
+            respData = {
+                state: 1,
+                message: 'Failed to send command, command not supported by the server!',
+                data: {}
+            };
+        }
+
+        res.json(respData);
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Failed to send command, error occurred while sending command: ' + err,
+            data: {}
+        };
+        console.log(respData.message);
+        res.json(respData);
+    }
 });
 
 /**********************************Smart Meter**********************************/
