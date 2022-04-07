@@ -149,7 +149,7 @@ router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, n
 
                 respData = {
                     state: 0,
-                    message: 'Send command to device succeed!',
+                    message: 'Ok',
                     data: {}
                 };
             }
