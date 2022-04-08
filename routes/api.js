@@ -77,12 +77,12 @@ router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, n
             commandData.cmd = cmd
         }
         else if (cmd === 'dim') {
-            commandData.cmd = cmd;
+            commandData.cmd = 'dimming';
             let brightness = req.body.param;
             if (brightness > 100) {
                 brightness = 100;
             }
-            if (brightness < 0) {
+            if (brightness < 5) {
                 brightness = 5;
             }
             commandData.data = brightness;
