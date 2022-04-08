@@ -10,17 +10,17 @@
 ## 开灯
 
 ```
-curl -X POST http://www.lengshuotech.com:3000/api/v1/scenes/86592b25f0-192255/meshes/00000000000000000000000000000000/devices/37 -H 'Content-Type: application/json' -d '{"cmd": "on"}'
+curl -X POST https://www.lengshuotech.com:3002/api/v1/scenes/86592b25f0-192255/meshes/00000000000000000000000000000000/devices/37 -H 'Content-Type: application/json' -d '{"cmd": "on"}'
 ```
 
 
 ## 关灯
 ```
-curl -X POST http://www.lengshuotech.com:3000/api/v1/scenes/86592b25f0-192255/meshes/00000000000000000000000000000000/devices/37 -H 'Content-Type: application/json' -d '{"cmd": "off"}'
+curl -X POST https://www.lengshuotech.com:3002/api/v1/scenes/86592b25f0-192255/meshes/00000000000000000000000000000000/devices/37 -H 'Content-Type: application/json' -d '{"cmd": "off"}'
 ```
 
 ## 调节亮度 (暂不可测)
 ```
-curl -X POST http://www.lengshuotech.com:3000/api/v1/scenes/86592b25f0-192255/meshes/00000000000000000000000000000000/devices/37 -H 'Content-Type: application/json' -d '{"cmd": "dim","param":20}'
+curl -X POST https://www.lengshuotech.com:3002/api/v1/scenes/86592b25f0-192255/meshes/00000000000000000000000000000000/devices/37 -H 'Content-Type: application/json' -d '{"cmd": "dim","param":20}'
 ```
 
