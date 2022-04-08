@@ -19,7 +19,7 @@ curl -X POST https://www.lengshuotech.com:3002/api/v1/scenes/86592b25f0-192255/m
 curl -X POST https://www.lengshuotech.com:3002/api/v1/scenes/86592b25f0-192255/meshes/00000000000000000000000000000000/devices/37 -H 'Content-Type: application/json' -d '{"cmd": "off"}'
 ```
 
-## 调节亮度 (暂不可测)
+## 调节亮度
 ```
 curl -X POST https://www.lengshuotech.com:3002/api/v1/scenes/86592b25f0-192255/meshes/00000000000000000000000000000000/devices/37 -H 'Content-Type: application/json' -d '{"cmd": "dim","param":20}'
 ```
