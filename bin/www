@@ -33,8 +33,8 @@ serverHttp.on('listening', onListeningHttp);
 
 
 //Https server
-const keyFilePath = '/usr/local/ls-apps/cert/Nginx/2_www.lengshuotech.com.key';
-const certFilePath = '/usr/local/ls-apps/cert/Nginx/1_www.lengshuotech.com_bundle.crt';
+const keyFilePath = '/usr/local/ls-apps/cert/www.lengshuotech.com.key';
+const certFilePath = '/usr/local/ls-apps/cert/www.lengshuotech.com.pem';
 const options = {
   key: fs.readFileSync(keyFilePath),
   cert: fs.readFileSync(certFilePath)
