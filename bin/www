@@ -7,6 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('ls-server:server');
 var http = require('http');
+const https = require('https');
+const fs = require('fs');
 
 /**
  * Get port from environment and store in Express.
@@ -19,15 +21,29 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var serverHttp = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+serverHttp.listen(port);
+serverHttp.on('error', onError);
+serverHttp.on('listening', onListeningHttp);
+
+
+//Https server
+const keyFilePath = '/usr/local/ls-apps/cert/Nginx/2_www.lengshuotech.com.key';
+const certFilePath = '/usr/local/ls-apps/cert/Nginx/1_www.lengshuotech.com_bundle.crt';
+const options = {
+  key: fs.readFileSync(keyFilePath),
+  cert: fs.readFileSync(certFilePath)
+};
+
+var serverHttps = https.createServer(options, app)
+serverHttps.listen(3002);
+serverHttps.on('error', onError);
+serverHttps.on('listening', onListeningHttps);
 
 /**
  * Normalize a port into a number, string, or false.
@@ -81,8 +97,16 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
-  var addr = server.address();
+function onListeningHttp() {
+  var addr = serverHttp.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+function onListeningHttps() {
+  var addr = serverHttps.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
