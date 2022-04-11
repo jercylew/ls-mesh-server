@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors({origin: '*', methods: ['GET','POST', 'PATCH', 'DELETE']}));
+app.use(cors({ origin: '*', methods: ['GET', 'POST', 'PATCH', 'DELETE'] }));
 app.use(bodyParser.json())
 
 app.use('/bebebus-app-front', bebebusAppFrontRouter);
@@ -57,12 +57,12 @@ app.post('/login', (req, res) => {
 });
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -73,7 +73,7 @@ app.use(function(err, req, res, next) {
 });
 
 // Connect to mogodb
-mongoose.connect(mogoServerUrl, { useUnifiedTopology: true, useNewUrlParser: true  }, (err) => {
+mongoose.connect(mogoServerUrl, { useUnifiedTopology: true, useNewUrlParser: true }, (err) => {
   if (err) {
     console.log("Failed to connect to DB " + mogoServerUrl + ": " + err);
   }

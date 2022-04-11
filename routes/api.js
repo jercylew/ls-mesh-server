@@ -3,6 +3,8 @@
 var express = require('express');
 const axios = require('axios');
 var net = require('net');
+const cors = require('cors');
+
 const Article = require('../models/Article');
 const CoverVideo = require('../models/CoverVideo');
 const InstallVideo = require('../models/InstallVideo');
@@ -11,6 +13,7 @@ const WizardVideo = require('../models/WizardVideo');
 const StartScreen = require('../models/StartScreen');
 
 var router = express.Router();
+router.all('*', cors());
 
 /**********************************Ble devices/**********************************/
 
