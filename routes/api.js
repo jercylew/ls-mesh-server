@@ -4,6 +4,8 @@ var express = require('express');
 const axios = require('axios');
 var net = require('net');
 const cors = require('cors');
+const spawn = require('child_process').spawn;
+const execSync = require('child_process').execSync;
 
 const Article = require('../models/Article');
 const CoverVideo = require('../models/CoverVideo');
@@ -11,6 +13,9 @@ const InstallVideo = require('../models/InstallVideo');
 const Slide = require('../models/Slide');
 const WizardVideo = require('../models/WizardVideo');
 const StartScreen = require('../models/StartScreen');
+
+const ffmpegPath = '/usr/bin/ffmpeg';
+const ffmpegKillCmd = '/usr/bin/killall ffmpeg';
 
 var router = express.Router();
 router.all('*', cors());
@@ -915,6 +920,53 @@ router.post('/v1/test/current/seg-data', async (req, res) => {
                 };
                 res.json(respData)
             });
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Error occurred while communicating to data server: ' + err,
+            data: {}
+        };
+        console.log('Error occurred while communicating to data server: ' + JSON.stringify(err))
+        res.json(respData)
+    }
+});
+
+// Current video replay, for local deployment only (Jiulong)
+// Prequsities: 1) ffmpeg installed, 2) rtmp server (Nginx) setup
+router.post('/v1/test/current/start-video', async (req, res) => {
+    console.log('Start video stream for recorded in current sensor scene: ' + JSON.stringify(req.body));
+    try {
+        const sceneId = req.body.scene_id;
+        const devId = req.body.dev_id;
+        const channel = '101';
+        const startTime = req.body.start_time;
+        const endTime = req.body.end_time;
+        const rtsp = `rtsp://admin:taikwan123@192.168.2.175:554/Streaming/tracks/${channel}?starttime=${startTime}&endtime=${endTime}`;
+        const rtmp = 'rtmp://www.lengshuotech.com:1935/tkt_test/tkt_office_ch0';
+        const ffmpegOptions = [
+            '-i', rtsp,
+            '-vcodec', 'copy',
+            '-an',
+            '-f',
+            'flv',
+            rtmp
+        ];
+
+        try {
+            execSync(ffmpegKillCmd);
+        }
+        catch (err) {
+            console.log('No ffmpege started');
+        }
+
+        spawn(ffmpegPath, ffmpegOptions);
+        let respData = {
+            state: 0,
+            message: 'Successfully start the video ffmpeg push service',
+            data: {}
+        };
+        console.log('Successfully start the video ffmpeg push service')
+        res.json(respData)
     } catch (err) {
         let respData = {
             state: 1,
