@@ -2,7 +2,6 @@
 // This implementaton is based on the specification 
 var express = require('express');
 const axios = require('axios');
-var net = require('net');
 const cors = require('cors');
 const spawn = require('child_process').spawn;
 const execSync = require('child_process').execSync;
