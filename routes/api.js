@@ -14,6 +14,8 @@ const Slide = require('../models/Slide');
 const WizardVideo = require('../models/WizardVideo');
 const StartScreen = require('../models/StartScreen');
 
+const meshUtils = require('../lib/mesh_utils');
+
 const ffmpegPath = '/usr/bin/ffmpeg';
 const ffmpegKillCmd = '/usr/bin/killall ffmpeg';
 
@@ -56,118 +58,39 @@ router.get('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', function (req
 // Control a device
 router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, next) => {
     console.log('Got body:', req.body);
+    let respData = {
+        state: 0,
+        message: '',
+        data: {}
+    };
 
     try {
-        let respData = {
-            state: 0,
-            message: '',
-            data: {}
-        };
-
         const lsToken = req.headers['ls-token'];
 
         //TODO: check user identity
         console.log('Control device, ls-token: ', lsToken);
 
-        const cmd = req.body.cmd;
-        const sceneId = req.params.scene_id;
-        const meshId = req.params.mesh_id;
-        const devId = parseInt(req.params.dev_id);
-
-        console.log(`Trying to control device, scene: ${sceneId}, mesh: ${meshId}, device: ${devId}`);
-
-        let commandData = {
-            mesh_uuid: meshId ? meshId : '00000000000000000000000000000000',
-            bluetooth_address: devId,
-        };
-
-        if (cmd === 'on' || cmd === 'off') {
-            commandData.cmd = cmd
+        const type = req.body.type;
+        let meshDevCommand = null
+        if (type === 'luminaire_control') {
+            meshDevCommand = meshUtils.getLuminaireCommandData(req);
         }
-        else if (cmd === 'dim') {
-            commandData.cmd = 'dimming';
-            let brightness = req.body.param;
-            if (brightness > 100) {
-                brightness = 100;
-            }
-            if (brightness < 5) {
-                brightness = 5;
-            }
-            commandData.data = brightness;
+        else if (type === '5ch_relay_control') {
+            meshDevCommand = meshUtils.get5ChRelayCommandData(req);
         }
         else {
-            console.log('Failed to control device: unknown cmd, current supported: on|off|dim');
+            console.error('Unsupported device type');
         }
 
-        if (commandData.cmd) {
-            if (sceneId === '86592b25f0-192255') {
-                let meshDevCommand = {
-                    topic: 'request',
-                    command: 'luminaire_control',
-                    data: commandData
-                };
-
-                // creating a custom socket client and connecting it....
-                var client = new net.Socket();
-                client.connect({
-                    // host: 'www.lengshuotech.com',
-                    port: 7200
-                });
-
-                client.on('connect', function () {
-                    console.log('Client: connection established with server');
-
-                    console.log('---------client details -----------------');
-                    var address = client.address();
-                    var port = address.port;
-                    var family = address.family;
-                    var ipaddr = address.address;
-                    console.log('Client is listening at port' + port);
-                    console.log('Client ip :' + ipaddr);
-                    console.log('Client is IP4/IP6 : ' + family);
-
-
-                    // writing data to server
-                    let connectHostCommand = {
-                        command: 'connect',
-                        data: {
-                            host_id: '86592b25f0'
-                        }
-                    };
-
-                    client.write(JSON.stringify(connectHostCommand) + '\n');
-                });
-                client.setEncoding('utf8');
-
-                client.on('data', function (data) {
-                    console.log('Data from server:' + data);
-                    if (data.includes('CONNECT_SUCCESS!')) {
-                        console.log('Now send command: ', JSON.stringify(meshDevCommand) + '\n');
-                        client.write(JSON.stringify(meshDevCommand) + '\n');
-                    }
-                    else if (data.indexOf('"result":"success"') > 0) {
-                        console.log('Send command succeed, now close the connection');
-                        client.end();
-                    }
-                });
-
-                client.on('close', function () {
-                    console.log('Connection closed');
-                });
-
-                respData = {
-                    state: 0,
-                    message: 'Ok',
-                    data: {}
-                };
-            }
-            else {
-                respData = {
-                    state: 1,
-                    message: 'Failed to send command to the device, scene not support remote control yet!',
-                    data: {}
-                };
-            }
+        if (meshDevCommand) {
+            const sceneId = req.params.scene_id;
+            const host_id = sceneId.substring(0, 10);
+            meshUtils.sendMeshCommand(host_id, meshDevCommand);
+            respData = {
+                state: 0,
+                message: 'Ok',
+                data: {}
+            };
         }
         else {
             respData = {
@@ -179,7 +102,7 @@ router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, n
 
         res.json(respData);
     } catch (err) {
-        let respData = {
+        respData = {
             state: 1,
             message: 'Failed to send command, error occurred while sending command: ' + err,
             data: {}
