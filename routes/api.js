@@ -896,7 +896,24 @@ router.post('/v1/test/current/start-video', async (req, res) => {
 
         console.log('Trying to start ffmpeg:', rtsp);
 
-        spawn(ffmpegPath, ffmpegOptions);
+        let ffmpeg_process = spawn(ffmpegPath, ffmpegOptions);
+
+        ffmpeg_process.on('error', (err) => {
+            console.error('Failed to start ffmpeg:', err);
+        });
+
+        ffmpeg_process.stdout.on('data', (data) => {
+            console.log(`ffmpeg stdout: ${data}`);
+        });
+
+        ffmpeg_process.stderr.on('data', (data) => {
+            console.error(`ffmpeg stderr: ${data}`);
+        });
+
+        ffmpeg_process.on('close', (code) => {
+            console.log(`ffmpeg process exited with code ${code}`);
+        });
+
         let respData = {
             state: 0,
             message: 'Successfully start the video ffmpeg push service',
