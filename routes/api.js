@@ -861,11 +861,11 @@ router.post('/v1/test/current/start-video', async (req, res) => {
     try {
         const sceneId = req.body.scene_id;
         const devId = req.body.dev_id;
-        const channel = '101';
         const startTime = req.body.start_time;
         const endTime = req.body.end_time;
-        // const rtsp = `rtsp://admin:taikwan123@192.168.2.175:554/Streaming/tracks/${channel}?starttime=${startTime}&endtime=${endTime}`;
-        const rtsp = rtspConf.rtsps[devId];
+        const rtsp = `${rtspConf.rtsps[devId]}?starttime=${startTime}&endtime=${endTime}`;
+        // const rtsp = rtspConf.rtsps[devId];
+
         const rtmp = 'rtmp://127.0.0.1:1935/jiulong_stream/jiulongdczb_ch0';//rtmp://www.lengshuotech.com:1935/tkt_test/tkt_office_ch0
         const ffmpegOptions = [
             '-i', rtsp,
@@ -882,6 +882,8 @@ router.post('/v1/test/current/start-video', async (req, res) => {
         catch (err) {
             console.log('No ffmpege started');
         }
+
+        console.log('Trying to start ffmpeg:', rtsp);
 
         spawn(ffmpegPath, ffmpegOptions);
         let respData = {

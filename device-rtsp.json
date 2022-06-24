@@ -1,6 +1,6 @@
 {
     "rtsps": {
-        "102": "rtsp://admin:a12345678@192.168.0.25:554/streaming/channels/202",
+        "102": "rtsp://admin:a12345678@192.168.0.25:554/streaming/tracks/202",
         "103": "rtsp://admin:a12345678@192.168.0.240:554/streaming/channels/1502",
         "105": "rtsp://admin:a12345678@192.168.0.25:554/streaming/channels/202"
     },
