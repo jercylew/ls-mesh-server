@@ -14,9 +14,10 @@ const WizardVideo = require('../models/WizardVideo');
 const StartScreen = require('../models/StartScreen');
 
 const meshUtils = require('../lib/mesh_utils');
+const rtspConf = require('../device-rtsp.json');
 
-const ffmpegPath = '/usr/bin/ffmpeg';
-const ffmpegKillCmd = '/usr/bin/killall ffmpeg';
+const ffmpegPath = '/opt/ffmpeg-git-20200909-amd64-static/ffmpeg';
+const ffmpegKillCmd = '/usr/bin/pkill ffmpeg';
 
 var router = express.Router();
 router.all('*', cors());
@@ -863,8 +864,9 @@ router.post('/v1/test/current/start-video', async (req, res) => {
         const channel = '101';
         const startTime = req.body.start_time;
         const endTime = req.body.end_time;
-        const rtsp = `rtsp://admin:taikwan123@192.168.2.175:554/Streaming/tracks/${channel}?starttime=${startTime}&endtime=${endTime}`;
-        const rtmp = 'rtmp://www.lengshuotech.com:1935/tkt_test/tkt_office_ch0';
+        // const rtsp = `rtsp://admin:taikwan123@192.168.2.175:554/Streaming/tracks/${channel}?starttime=${startTime}&endtime=${endTime}`;
+        const rtsp = rtspConf.rtsps[devId];
+        const rtmp = 'rtmp://127.0.0.1:1935/jiulong_stream/jiulongdczb_ch0';//rtmp://www.lengshuotech.com:1935/tkt_test/tkt_office_ch0
         const ffmpegOptions = [
             '-i', rtsp,
             '-vcodec', 'copy',
