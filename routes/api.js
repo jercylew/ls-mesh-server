@@ -864,13 +864,24 @@ router.post('/v1/test/current/start-video', async (req, res) => {
         const startTime = req.body.start_time;
         const endTime = req.body.end_time;
         const rtsp = `${rtspConf.rtsps[devId]}?starttime=${startTime}&endtime=${endTime}`;
-        // const rtsp = rtspConf.rtsps[devId];
 
-        const rtmp = 'rtmp://127.0.0.1:1935/jiulong_stream/jiulongdczb_ch0';//rtmp://www.lengshuotech.com:1935/tkt_test/tkt_office_ch0
+        const rtmp = 'rtmp://127.0.0.1:1935/jiulong_stream/jiulongdczb_ch0';
         const ffmpegOptions = [
             '-i', rtsp,
-            '-vcodec', 'copy',
+            '-filter:v',
+            'fps=fps=12',
+            '-vcodec libx264',
             '-an',
+            '-s',
+            '480x270',
+            '-f',
+            'flv',
+            '-s',
+            '480x270',
+            '-b:v',
+            '125k',
+            '-bufsize',
+            '125k',
             '-f',
             'flv',
             rtmp
