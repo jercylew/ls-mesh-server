@@ -865,7 +865,7 @@ router.post('/v1/test/current/start-video', async (req, res) => {
         const endTime = req.body.end_time;
         const rtsp = `${rtspConf.rtsps[devId]}?starttime=${startTime}&endtime=${endTime}`;
 
-        const rtmp = 'rtmp://127.0.0.1:1935/jiulong_stream/jiulongdczb_ch0';
+        const rtmp = 'rtmp://localhost:1935/tkt_test/jiulongdczb_ch0';
         const ffmpegOptions = [
             '-i', rtsp,
             '-filter:v',
@@ -874,11 +874,11 @@ router.post('/v1/test/current/start-video', async (req, res) => {
             'libx264',
             '-an',
             '-s',
-            '480x270',
+            '1024x768',
             '-f',
             'flv',
             '-s',
-            '480x270',
+            '1024x768',
             '-b:v',
             '125k',
             '-bufsize',
@@ -887,6 +887,12 @@ router.post('/v1/test/current/start-video', async (req, res) => {
             'flv',
             rtmp
         ];
+        //const ffmpegOptions = [
+	//	'-i', rtsp,
+	//	'-vcodec', 'copy',
+	//	'-an', '-f', 'flv',
+	//	rtmp
+	//];
 
         try {
             execSync(ffmpegKillCmd);
