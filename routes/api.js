@@ -5,6 +5,7 @@ const axios = require('axios');
 const cors = require('cors');
 const spawn = require('child_process').spawn;
 const execSync = require('child_process').execSync;
+const fs = require('fs');
 
 const Article = require('../models/Article');
 const CoverVideo = require('../models/CoverVideo');
@@ -14,6 +15,7 @@ const WizardVideo = require('../models/WizardVideo');
 const StartScreen = require('../models/StartScreen');
 
 const meshUtils = require('../lib/mesh_utils');
+const datetimeUtils = require('../lib/datetime_utils')
 const rtspConf = require('../device-rtsp.json');
 
 const ffmpegPath = '/opt/ffmpeg-git-20200909-amd64-static/ffmpeg';
@@ -818,11 +820,35 @@ router.delete('/v1/test/bebebus/start-screen/:id', async (req, res) => {
 router.post('/v1/test/current/seg-data', async (req, res) => {
     console.log('Get request for current seg-data: ' + JSON.stringify(req.body));
     try {
+        const devType = req.body.type;
+        if (devType === null || devType === undefined || devType === '') {
+            let respData = {
+                state: 1,
+                message: 'Dev type must be provided!',
+                data: {}
+            };
+            res.json(respData);
+            return;
+        }
+        const devTypeInfo = rtspConf.devType[devType];
+        console.log('Get request for current seg-data: ', devTypeInfo);
+        const devId = devTypeInfo.id;
+
+        if (devId === null || devId === undefined || devId === '') {
+            let respData = {
+                state: 1,
+                message: 'Cannot find a associated device ID for such type!',
+                data: {}
+            };
+            res.json(respData);
+            return;
+        }
+
         axios.post('http://127.0.0.1:3001/api/v1/current-seg-fig', {
-            id: req.body.id,
+            id: devId,
             date: req.body.date,
             scene_id: req.body.scene_id,
-            type: req.body.type,
+            type: devType,
             cluster: req.body.cluster,
         })
             .then(function (response) {
@@ -935,6 +961,46 @@ router.post('/v1/test/current/start-video', async (req, res) => {
             data: {}
         };
         console.log('Error occurred while communicating to data server: ' + JSON.stringify(err))
+        res.json(respData)
+    }
+});
+
+// Current available list of device types in the specified scene
+router.get('/v1/test/current/dev-types/:scene_id', async (req, res) => {
+    try {
+        const allFiles = fs.readdirSync(`/usr/local/ls-apps/ls-data-server/ls_data_app/static/data/current/${req.params.scene_id}`);
+        let outDevTypes = [];
+        const todayStr = datetimeUtils.todayDate();
+
+        for (const file of allFiles) {
+            if (file.includes(todayStr)) {
+                const words = file.split('_');
+                const devID = words[2].substring(4);
+                for (const t in rtspConf.devType) {
+                    if (rtspConf.devType[t].id === devID) {
+                        outDevTypes.push({
+                            type: t,
+                            name: rtspConf.devType[t].name,
+                            id: devID
+                        })
+                    }
+                }
+            }
+        }
+
+        let respData = {
+            state: 0,
+            message: 'Get list of available devices succeed!',
+            data: outDevTypes
+        };
+        res.json(respData);
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Error occurred while fetching the list of devices: ' + err,
+            data: {}
+        };
+        console.log('Error occurred while fetching the list of devices: ' + JSON.stringify(err))
         res.json(respData)
     }
 });
