@@ -966,11 +966,15 @@ router.post('/v1/test/current/start-video', async (req, res) => {
 });
 
 // Current available list of device types in the specified scene
-router.get('/v1/test/current/dev-types/:scene_id', async (req, res) => {
+router.get('/v1/test/current/dev-types/:scene_id/:date', async (req, res) => {
     try {
         const allFiles = fs.readdirSync(`/usr/local/ls-apps/ls-data-server/ls_data_app/static/data/current/${req.params.scene_id}`);
         let outDevTypes = [];
-        const todayStr = datetimeUtils.todayDate();
+
+        let todayStr = req.params.date;
+        if (todayStr === null || todayStr === undefined || todayStr === '') {
+            todayStr = datetimeUtils.todayDate();
+        }
 
         for (const file of allFiles) {
             if (file.includes(todayStr)) {
