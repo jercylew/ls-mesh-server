@@ -1042,11 +1042,11 @@ router.post('/v1/test/current/slice-video', async (req, res) => {
             id: devId,
             date: date,
             scene_id: sceneId,
-            type: devType,
+            type: parseInt(devType),
             cluster: 2,
         })
             .then(function (response) {
-                console.log('Video slice, get data seg response:', response);
+                console.log('Video slice, get data seg response:', response.data);
                 const clusterPoints = response.data.cluster_pts;
                 const times = response.data.time;
                 const regex = /-/ig;
