@@ -20,6 +20,9 @@ const rtspConf = require('../device-rtsp.json');
 
 const ffmpegPath = '/opt/ffmpeg-git-20200909-amd64-static/ffmpeg';
 const ffmpegKillCmd = '/usr/bin/pkill ffmpeg';
+const currentDataFilePath = '/usr/local/ls-apps/ls-data-server/ls_data_app/static/data/current';
+
+const regexTime = /:/ig;
 
 var router = express.Router();
 router.all('*', cors());
@@ -831,7 +834,7 @@ router.post('/v1/test/current/seg-data', async (req, res) => {
             return;
         }
         const devTypeInfo = rtspConf.devType[devType];
-        console.log('Get request for current seg-data: ', devTypeInfo);
+        console.log('Device type: ', devTypeInfo);
         const devId = devTypeInfo.id;
 
         if (devId === null || devId === undefined || devId === '') {
@@ -1005,6 +1008,90 @@ router.get('/v1/test/current/dev-types/:scene_id/:date?', async (req, res) => {
             data: {}
         };
         console.log('Error occurred while fetching the list of devices: ' + JSON.stringify(err))
+        res.json(respData)
+    }
+});
+
+// Current video slicing from data file, fetch from HikVision recorder
+router.post('/v1/test/current/slice-video', async (req, res) => {
+    console.log('Slice video: ' + JSON.stringify(req.body));
+    try {
+        const sceneId = req.body.scene_id;
+        const devId = req.body.dev_id;
+        const date = req.body.date;
+
+        let devType = '';
+        for (let type in rtspConf.devType) {
+            if (rtspConf.devType[type].id === devId) {
+                devType = type;
+                break;
+            }
+        }
+
+        if (devType === '') {
+            res.json({
+                state: 1,
+                message: 'Cannot find a associated device type for such id!',
+                data: {}
+            });
+            return;
+        }
+
+        axios.post('http://127.0.0.1:3001/api/v1/current-seg-fig', {
+            id: devId,
+            date: date,
+            scene_id: sceneId,
+            type: devType,
+            cluster: 2,
+        })
+            .then(function (response) {
+                const clusterPoints = response.data.cluster_pts;
+                const times = response.data.time;
+                const regex = /-/ig;
+                const dateText = date.replace(regex, '');
+
+                for (let cluster of clusterPoints) {
+                    console.log('Slice video for cluster:', cluster);
+                    const startTimeText = times[cluster[0]].substring(0, 8).replace(regexTime, '');
+                    const endTimeText = times[cluster[1]].substring(0, 8).replace(regexTime, '');
+                    const startTime = `${dateText}T${startTimeText}Z`;
+                    const endTime = `${dateText}T${endTimeText}Z`;
+                    const saveFilePath = `${currentDataFilePath}/${sceneId}/current_track_${devId}_${dateText}${startTimeText}_${dateText}${endTimeText}.mp4`;
+
+                    if (fs.existsSync(saveFilePath)) {
+                        console.log('Slice video, video already created, skip:', saveFilePath);
+                        continue;
+                    }
+                    const rtsp = `${rtspConf.rtsps[devId]}?starttime=${startTime}&endtime=${endTime}`;
+                    const videoSliceCmd = `${ffmpegPath} -i ${rtsp} -filter:v fps=fps=12 -vcodec libx264 -an -s 1024x768  -b:v 125k -bufsize 125k ${saveFilePath}`;
+
+                    console.log('Slice video for cluster: ', videoSliceCmd);
+                    execSync(videoSliceCmd);
+                }
+
+                res.json({
+                    state: 0,
+                    message: 'Slice video succeed!',
+                    data: {}
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+
+                let respData = {
+                    state: 1,
+                    message: 'Error occurred while communicating to data server: ' + error,
+                    data: {}
+                };
+                res.json(respData)
+            });
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Error occurred while communicating to data server: ' + err,
+            data: {}
+        };
+        console.log('Error occurred while communicating to data server: ' + JSON.stringify(err))
         res.json(respData)
     }
 });
