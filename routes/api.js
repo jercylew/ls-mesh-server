@@ -1065,7 +1065,7 @@ router.post('/v1/test/current/slice-video', async (req, res) => {
                         continue;
                     }
                     const rtsp = `${rtspConf.rtsps[devId]}?starttime=${startTime}&endtime=${endTime}`;
-                    const videoSliceCmd = `${ffmpegPath} -i ${rtsp} -filter:v fps=fps=12 -vcodec libx264 -an -s 1024x768  -b:v 125k -bufsize 125k ${saveFilePath}`;
+                    const videoSliceCmd = `${ffmpegPath} -i "${rtsp}" -filter:v fps=fps=12 -vcodec libx264 -an -s 1024x768  -b:v 125k -bufsize 125k ${saveFilePath}`;
 
                     console.log('Slice video for cluster: ', videoSliceCmd);
                     execSync(videoSliceCmd);
