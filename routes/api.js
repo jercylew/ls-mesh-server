@@ -21,6 +21,7 @@ const rtspConf = require('../device-rtsp.json');
 const ffmpegPath = '/opt/ffmpeg-git-20200909-amd64-static/ffmpeg';
 const ffmpegKillCmd = '/usr/bin/pkill ffmpeg';
 const currentDataFilePath = '/usr/local/ls-apps/ls-data-server/ls_data_app/static/data/current';
+const currentVideoSlicePath = '/usr/local/ls-apps/ls-mesh-server/public/res/';
 
 const regexTime = /:/ig;
 
@@ -1045,6 +1046,7 @@ router.post('/v1/test/current/slice-video', async (req, res) => {
             cluster: 2,
         })
             .then(function (response) {
+                console.log('Video slice, get data seg response:', response);
                 const clusterPoints = response.data.cluster_pts;
                 const times = response.data.time;
                 const regex = /-/ig;
@@ -1056,7 +1058,7 @@ router.post('/v1/test/current/slice-video', async (req, res) => {
                     const endTimeText = times[cluster[1]].substring(0, 8).replace(regexTime, '');
                     const startTime = `${dateText}T${startTimeText}Z`;
                     const endTime = `${dateText}T${endTimeText}Z`;
-                    const saveFilePath = `${currentDataFilePath}/${sceneId}/current_track_${devId}_${dateText}${startTimeText}_${dateText}${endTimeText}.mp4`;
+                    const saveFilePath = `${currentVideoSlicePath}/${sceneId}/current_track_${devId}_${dateText}${startTimeText}_${dateText}${endTimeText}.mp4`;
 
                     if (fs.existsSync(saveFilePath)) {
                         console.log('Slice video, video already created, skip:', saveFilePath);
