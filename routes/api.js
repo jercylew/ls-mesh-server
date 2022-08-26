@@ -825,6 +825,7 @@ router.post('/v1/test/current/seg-data', async (req, res) => {
     console.log('Get request for current seg-data: ' + JSON.stringify(req.body));
     try {
         const devType = req.body.type;
+        const devIdSpecified = req.body.id;
         if (devType === null || devType === undefined || devType === '') {
             let respData = {
                 state: 1,
@@ -836,7 +837,10 @@ router.post('/v1/test/current/seg-data', async (req, res) => {
         }
         const devTypeInfo = rtspConf.devType[devType];
         console.log('Device type: ', devTypeInfo);
-        const devId = devTypeInfo.id;
+        // For Lengshuo and Jiulong both, in Lengshuo, user wants to specify the device ID themselves,
+        // In jiulong, however, they want to use device type only to map a particular device(i.e., device type & device ID),
+        // Here, if the user procided ID, we will not use the maped one
+        const devId = devIdSpecified ? devIdSpecified : devTypeInfo.id;
 
         if (devId === null || devId === undefined || devId === '') {
             let respData = {
