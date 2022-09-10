@@ -41,7 +41,7 @@ app.use(bodyParser.json())
 app.use('/bebebus-app-front', bebebusAppFrontRouter);
 app.use('/bebebus-cms-center', bebebusCmsCenterRouter);
 app.use('/ls-cloud-platform', lsCloudPlatformRouter);
-app.use('/jiulong-data-platform', jiulong-data-platform);
+app.use('/jiulong-data-platform', jiulongDataPlatformRouter);
 app.use('/users', usersRouter);
 app.use('/api', apiRouter);
 
