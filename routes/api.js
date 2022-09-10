@@ -1,6 +1,6 @@
 // Restful api for Lengshuo Product
 // This implementaton is based on the specification 
-var express = require('express');
+const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const spawn = require('child_process').spawn;
@@ -25,7 +25,7 @@ const currentVideoSlicePath = '/usr/local/ls-apps/ls-mesh-server/public/res/';
 
 const regexTime = /:/ig;
 
-var router = express.Router();
+const router = express.Router();
 router.all('*', cors());
 
 /**********************************Ble devices/**********************************/
