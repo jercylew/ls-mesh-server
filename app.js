@@ -1,8 +1,8 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -12,14 +12,15 @@ require('dotenv/config');
 const mogoServerUrl = 'mongodb://127.0.0.1:27017/ls-test?retryWrites=true&w=majority&directConnection=true&serverSelectionTimeoutMS=2000'
 
 
-var indexRouter = require('./routes/index');
-var bebebusAppFrontRouter = require('./routes/bebebus-app-front');
-var bebebusCmsCenterRouter = require('./routes/bebebus-cms');
-var lsCloudPlatformRouter = require('./routes/ls-cloud-platform');
-var usersRouter = require('./routes/users');
-var apiRouter = require('./routes/api');
+const indexRouter = require('./routes/index');
+const bebebusAppFrontRouter = require('./routes/bebebus-app-front');
+const bebebusCmsCenterRouter = require('./routes/bebebus-cms');
+const lsCloudPlatformRouter = require('./routes/ls-cloud-platform');
+const jiulongDataPlatformRouter = require('./routes/jiulong-data-platform');
+const usersRouter = require('./routes/users');
+const apiRouter = require('./routes/api');
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -34,13 +35,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//app.use(cors({ origin: '*', methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'] }));
 app.use(cors());
 app.use(bodyParser.json())
 
 app.use('/bebebus-app-front', bebebusAppFrontRouter);
 app.use('/bebebus-cms-center', bebebusCmsCenterRouter);
 app.use('/ls-cloud-platform', lsCloudPlatformRouter);
+app.use('/jiulong-data-platform', jiulong-data-platform);
 app.use('/users', usersRouter);
 app.use('/api', apiRouter);
 

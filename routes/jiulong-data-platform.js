@@ -3,8 +3,8 @@ const router = express.Router();
 const path = require('path');
 
 router.get('/*', function(req, res, next) {
-  console.log('Index rout ...');
-  res.sendFile(path.join(__dirname, '../public', 'index.html'));
+  console.log('Jiulong data platform route ...');
+  res.sendFile(path.join(__dirname, '../public/jiulong-data-platform', 'index.html'));
 });
 
 module.exports = router;
