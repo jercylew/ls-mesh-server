@@ -13,6 +13,7 @@ const InstallVideo = require('../models/InstallVideo');
 const Slide = require('../models/Slide');
 const WizardVideo = require('../models/WizardVideo');
 const StartScreen = require('../models/StartScreen');
+const Scene = require('../models/Scene');
 
 const meshUtils = require('../lib/mesh_utils');
 const datetimeUtils = require('../lib/datetime_utils')
@@ -30,9 +31,53 @@ router.all('*', cors());
 
 /**********************************Ble devices/**********************************/
 
-// List scenes
-router.get('/v1/scenes', function (req, res, next) {
-    res.send('Implementing ...');
+// Scenes
+router.post('/v1/scenes', async (req, res) => {
+    const scene = new Scene({
+        name: req.body.name,
+        frpPort: req.body.frp_port,
+        gatewayId: req.body.gateway_id,
+        address: req.body.address,
+    })
+
+    try {
+        const savedScene = await scene.save();
+        let respData = {
+            state: 0,
+            message: 'Scene saved succeed!',
+            data: savedScene
+        };
+        console.log('Scene saved Ok!')
+        res.json(respData)
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Failed to save article: ' + err,
+            data: {}
+        };
+        console.log('Scene save failed: ' + JSON.stringify(err))
+        res.json(respData)
+    }
+});
+
+router.get('/v1/scenes', async function (req, res, next) {
+    try {
+        const scenes = await Scene.find();
+        console.log(scenes);
+        let respData = {
+            state: 0,
+            message: 'Scenes retrived succeed!',
+            data: scenes
+        };
+        res.json(respData);
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Failed to get scenes: ' + err,
+            data: []
+        };
+        res.json(respData);
+    }
 });
 
 // Get a scene
