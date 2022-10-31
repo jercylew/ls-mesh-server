@@ -10,6 +10,8 @@ var http = require('http');
 const https = require('https');
 const fs = require('fs');
 
+const mqttUtils = require('../lib/mqtt_utils');
+
 /**
  * Get port from environment and store in Express.
  */
@@ -44,6 +46,9 @@ var serverHttps = https.createServer(options, app)
 serverHttps.listen(3002);
 serverHttps.on('error', onError);
 serverHttps.on('listening', onListeningHttps);
+
+//Start MQTT client
+mqttUtils.connectMqtt();
 
 /**
  * Normalize a port into a number, string, or false.
