@@ -140,7 +140,7 @@ router.post('/v1/scenes/:id', async (req, res) => {
         let respData = {
             state: 0,
             message: 'Scene configured succeed!',
-            data: savedScene
+            data: {}
         };
         console.log('Scene configured Ok!')
         res.json(respData)
