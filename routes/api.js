@@ -34,6 +34,18 @@ router.all('*', cors());
 
 // Scenes
 router.post('/v1/scenes', async (req, res) => {
+    const scenes = await Scene.find({ frpPort: req.body.frp_port, gatewayId: req.body.gateway_id });
+    if (scenes.length > 0) {
+        const respData = {
+            state: 1,
+            message: 'Scene already existed!',
+            data: {}
+        };
+        console.log('Scene already existed!');
+        res.json(respData)
+        return;
+    }
+
     const scene = new Scene({
         name: req.body.name,
         frpPort: req.body.frp_port,
