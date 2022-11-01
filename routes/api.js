@@ -55,7 +55,7 @@ router.post('/v1/scenes', async (req, res) => {
                 address: req.body.address
             },
         };
-        mqttUtils.sendHostCmd(gateway_id, JSON.stringify(cmdJson));
+        mqttUtils.sendHostCmd(req.body.gateway_id, JSON.stringify(cmdJson));
 
         let respData = {
             state: 0,
