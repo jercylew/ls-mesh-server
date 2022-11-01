@@ -18,6 +18,7 @@ const Scene = require('../models/Scene');
 const meshUtils = require('../lib/mesh_utils');
 const datetimeUtils = require('../lib/datetime_utils')
 const rtspConf = require('../device-rtsp.json');
+const mqttUtils = require('../lib/mqtt_utils');
 
 const ffmpegPath = '/opt/ffmpeg-git-20200909-amd64-static/ffmpeg';
 const ffmpegKillCmd = '/usr/bin/pkill ffmpeg';
@@ -42,6 +43,20 @@ router.post('/v1/scenes', async (req, res) => {
 
     try {
         const savedScene = await scene.save();
+        const id = req.params.id;
+        let cmdJson = {
+            gateway_id: req.body.gateway_id,
+            user_id: req.body.user_id,
+            cmd: 'set',
+            category: 'init',  //Initialize the host: scene name, frp port
+            params: {
+                scene_name: req.body.name,
+                frp_port: req.body.frp_port,
+                address: req.body.address
+            },
+        };
+        mqttUtils.sendHostCmd(gateway_id, JSON.stringify(cmdJson));
+
         let respData = {
             state: 0,
             message: 'Scene saved succeed!',
@@ -81,9 +96,53 @@ router.get('/v1/scenes', async function (req, res, next) {
 });
 
 // Get a scene
-router.get('/v1/scenes/:scene_id', function (req, res, next) {
-    res.send('Implementing ...');
+router.get('/v1/scenes/:id', async function (req, res, next) {
+    try {
+        const scene = await Scene.findById(req.params.id);
+
+        console.log(scene);
+        let respData = {
+            state: 0,
+            message: 'Scene retrived succeed!',
+            data: scene
+        };
+        res.json(respData);
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Failed to get the scene: ' + err,
+            data: {}
+        };
+        res.json(respData);
+    }
 });
+
+//Configure a specified scene
+router.post('/v1/scenes/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const cmdJson = req.body;
+        console.log('Applying configurations, id: ', id, ', Settings: ', cmdJson);
+        mqttUtils.sendHostCmd(cmdJson.gateway_id, JSON.stringify(cmdJson));
+
+        let respData = {
+            state: 0,
+            message: 'Scene configured succeed!',
+            data: savedScene
+        };
+        console.log('Scene configured Ok!')
+        res.json(respData)
+    } catch (err) {
+        let respData = {
+            state: 1,
+            message: 'Failed to configured scene: ' + err,
+            data: {}
+        };
+        console.log('Scene configured failed: ' + JSON.stringify(err))
+        res.json(respData)
+    }
+});
+
 
 // List meshes
 router.get('/v1/scenes/:scene_id/meshes', function (req, res, next) {
