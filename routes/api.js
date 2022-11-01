@@ -67,7 +67,7 @@ router.post('/v1/scenes', async (req, res) => {
     } catch (err) {
         let respData = {
             state: 1,
-            message: 'Failed to save article: ' + err,
+            message: 'Failed to save scene: ' + err,
             data: {}
         };
         console.log('Scene save failed: ' + JSON.stringify(err))
