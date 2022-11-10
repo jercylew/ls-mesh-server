@@ -27,6 +27,7 @@ const SceneSchema = mongoose.Schema({
         devType: String,
         dataInfo: String,
         devKind: String,
+        status: Number,
         lastUpdated: Date
     }],
     logFiles: [{
