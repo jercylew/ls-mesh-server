@@ -16,7 +16,7 @@ const StartScreen = require('../models/StartScreen');
 const Scene = require('../models/Scene');
 
 const meshUtils = require('../lib/mesh_utils');
-const datetimeUtils = require('../lib/datetime_utils')
+const datetimeUtils = require('../lib/datetime_utils');
 const rtspConf = require('../device-rtsp.json');
 const mqttUtils = require('../lib/mqtt_utils');
 
