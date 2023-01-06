@@ -951,7 +951,18 @@ router.post('/v1/test/current/seg-data', async (req, res) => {
             res.json(respData);
             return;
         }
-        const devTypeInfo = rtspConf.devType[devType];
+
+        if (!(req.body.scene_id in rtspConf.devType)) {
+            let respData = {
+                state: 1,
+                message: `No device type config for the scene ${req.body.scene_id} found`,
+                data: {}
+            };
+            res.json(respData);
+            return;
+        }
+
+        const devTypeInfo = rtspConf.devType[req.body.scene_id][devType];
         console.log('Device type: ', devTypeInfo);
         // For Lengshuo and Jiulong both, in Lengshuo, user wants to specify the device ID themselves,
         // In jiulong, however, they want to use device type only to map a particular device(i.e., device type & device ID),
@@ -1092,6 +1103,16 @@ router.post('/v1/test/current/start-video', async (req, res) => {
 // Current available list of device types in the specified scene
 router.get('/v1/test/current/dev-types/:scene_id/:date?', async (req, res) => {
     try {
+        if (!(req.params.scene_id in rtspConf.devType)) {
+            let respData = {
+                state: 1,
+                message: `No device type config for the scene ${req.params.scene_id} found`,
+                data: []
+            };
+            res.json(respData);
+            return;
+        }
+
         const allFiles = fs.readdirSync(`/usr/local/ls-apps/ls-data-server/ls_data_app/static/data/current/${req.params.scene_id}`);
         let outDevTypes = [];
 
@@ -1104,11 +1125,11 @@ router.get('/v1/test/current/dev-types/:scene_id/:date?', async (req, res) => {
             if (file.includes(todayStr)) {
                 const words = file.split('_');
                 const devID = words[2].substring(4);
-                for (const t in rtspConf.devType) {
-                    if (rtspConf.devType[t].id === devID) {
+                for (const t in rtspConf.devType[req.params.scene_id]) {
+                    if (rtspConf.devType[req.params.scene_id][t].id === devID) {
                         outDevTypes.push({
                             type: t,
-                            name: rtspConf.devType[t].name,
+                            name: rtspConf.devType[req.params.scene_id][t].name,
                             id: devID
                         })
                     }
