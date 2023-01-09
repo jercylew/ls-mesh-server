@@ -985,6 +985,7 @@ router.post('/v1/test/current/seg-data', async (req, res) => {
             scene_id: req.body.scene_id,
             type: devType,
             cluster: req.body.cluster,
+            mesh_name: req.body.mesh_name
         })
             .then(function (response) {
                 let respData = {
