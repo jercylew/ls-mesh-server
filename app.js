@@ -18,6 +18,7 @@ const bebebusCmsCenterRouter = require('./routes/bebebus-cms');
 const lsCloudPlatformRouter = require('./routes/ls-cloud-platform');
 const jiulongDataPlatformRouter = require('./routes/jiulong-data-platform');
 const kaipudunDataPlatformRouter = require('./routes/kaipudun-data-platform');
+const lsSchoolSystemRouter = require('./routes/ls-school-system');
 const usersRouter = require('./routes/users');
 const apiRouter = require('./routes/api');
 
@@ -44,6 +45,7 @@ app.use('/bebebus-cms-center', bebebusCmsCenterRouter);
 app.use('/ls-cloud-platform', lsCloudPlatformRouter);
 app.use('/jiulong-data-platform', jiulongDataPlatformRouter);
 app.use('/kaipudun-data-platform', kaipudunDataPlatformRouter);
+app.use('/ls-school-system', lsSchoolSystemRouter);
 app.use('/users', usersRouter);
 app.use('/api', apiRouter);
 

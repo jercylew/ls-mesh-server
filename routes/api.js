@@ -32,7 +32,12 @@ router.all('*', cors());
 
 /**********************************Ble devices/**********************************/
 
-// Scenes
+// Put and Post is both okay for this project(BLE devices), `POST /v1/scenes` create a new scene with received payload,
+// note that the server will create multiple identical scenes (though with unique id) each time when receive
+// the same request (paylod) received.
+// However, `PUT /v1/scenes/13ef234ad-34ca6b` create a new one (if not exist) or replace the existing one
+// (if existed)
+// Create a new Scene
 router.post('/v1/scenes', async (req, res) => {
     const scenes = await Scene.find({ frpPort: req.body.frp_port, gatewayId: req.body.gateway_id });
     if (scenes.length > 0) {
@@ -87,6 +92,7 @@ router.post('/v1/scenes', async (req, res) => {
     }
 });
 
+// List available scenes
 router.get('/v1/scenes', async function (req, res, next) {
     try {
         const scenes = await Scene.find(null, { devices: 0, logFiles: 0 });
@@ -232,6 +238,36 @@ router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, n
         console.log(respData.message);
         res.json(respData);
     }
+});
+
+// List modbuses
+router.get('/v1/scenes/:scene_id/modbuses', function (req, res, next) {
+    res.send('Implementing ...');
+});
+
+// Get a modbus with the specified port name
+router.get('/v1/scenes/:scene_id/modbuses/:port', function (req, res, next) {
+    res.send('Implementing ...');
+});
+
+// List slaves in the specified port
+router.get('/v1/scenes/:scene_id/modbuses/:port/slaves', function (req, res, next) {
+    res.send('Implementing ...');
+});
+
+// Get a slave with the specified slave id in the port
+router.get('/v1/scenes/:scene_id/modbuses/:port/slaves/:slave_id', function (req, res, next) {
+    res.send('Implementing ...');
+});
+
+// List devices connected to the specified slave
+router.get('/v1/scenes/:scene_id/modbuses/:port/slaves/:slave_id/devices', function (req, res, next) {
+    res.send('Implementing ...');
+});
+
+// Get a device with the specified address in the slave
+router.get('/v1/scenes/:scene_id/modbuses/:port/slaves/:slave_id/devices/:address', function (req, res, next) {
+    res.send('Implementing ...');
 });
 
 /**********************************Smart Meter**********************************/
