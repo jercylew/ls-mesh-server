@@ -15,7 +15,7 @@ const WizardVideo = require('../models/WizardVideo');
 const StartScreen = require('../models/StartScreen');
 const Scene = require('../models/Scene');
 
-const meshUtils = require('../lib/mesh_utils');
+const commandUtils = require('../lib/command_utils');
 const datetimeUtils = require('../lib/datetime_utils');
 const rtspConf = require('../device-rtsp.json');
 const mqttUtils = require('../lib/mqtt_utils');
@@ -201,10 +201,10 @@ router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, n
         const type = req.body.type;
         let meshDevCommand = null
         if (type === 'luminaire_control') {
-            meshDevCommand = meshUtils.getLuminaireCommandData(req);
+            meshDevCommand = commandUtils.getLuminaireCommandData(req);
         }
         else if (type === '5ch_relay_control') {
-            meshDevCommand = meshUtils.get5ChRelayCommandData(req);
+            meshDevCommand = commandUtils.get5ChRelayCommandData(req);
         }
         else {
             console.error('Unsupported device type');
@@ -213,7 +213,7 @@ router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, n
         if (meshDevCommand) {
             const sceneId = req.params.scene_id;
             const host_id = sceneId.substring(0, 10);
-            meshUtils.sendMeshCommand(host_id, meshDevCommand);
+            commandUtils.sendCommand(host_id, meshDevCommand);
             respData = {
                 state: 0,
                 message: 'Ok',
@@ -268,6 +268,59 @@ router.get('/v1/scenes/:scene_id/modbuses/:port/slaves/:slave_id/devices', funct
 // Get a device with the specified address in the slave
 router.get('/v1/scenes/:scene_id/modbuses/:port/slaves/:slave_id/devices/:address', function (req, res, next) {
     res.send('Implementing ...');
+});
+
+// Control a device with the specified address in the slave
+router.post('/v1/scenes/:scene_id/modbuses/:port/slaves/:slave_id/devices/:address', (req, res, next) => {
+    console.log('Got body:', req.body);
+    let respData = {
+        state: 0,
+        message: '',
+        data: {}
+    };
+
+    try {
+        const lsToken = req.headers['ls-token'];
+        console.log('Control device, ls-token: ', lsToken);
+
+        const type = req.body.type;
+        let modbusCtrlCommand = null
+        if (type === 'modbus_control') {
+            modbusCtrlCommand = commandUtils.getModbusCommandData(req);
+        }
+        else {
+            console.error('Unsupported device type');
+        }
+
+        if (modbusCtrlCommand) {
+            const sceneId = req.params.scene_id;
+            const host_id = sceneId.substring(0, 10);
+
+            commandUtils.sendCommand(host_id, modbusCtrlCommand);
+            respData = {
+                state: 0,
+                message: 'Ok',
+                data: {}
+            };
+        }
+        else {
+            respData = {
+                state: 1,
+                message: 'Failed to send command, command not supported by the server!',
+                data: {}
+            };
+        }
+
+        res.json(respData);
+    } catch (err) {
+        respData = {
+            state: 1,
+            message: 'Failed to send command, error occurred while sending command: ' + err,
+            data: {}
+        };
+        console.log(respData.message);
+        res.json(respData);
+    }
 });
 
 /**********************************Smart Meter**********************************/
