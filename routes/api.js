@@ -118,7 +118,6 @@ router.get('/v1/scenes/:id', async function (req, res, next) {
     try {
         const scene = await Scene.findById(req.params.id);
 
-        console.log(scene);
         let respData = {
             state: 0,
             message: 'Scene retrived succeed!',
