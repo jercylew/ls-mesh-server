@@ -35,6 +35,12 @@ const SceneSchema = mongoose.Schema({
         size: Number,
         lastUpdated: Date
     }],
+    relayLogs: [ {
+        relayId: String,
+        startTime: Date,
+        elapsed: Number,
+        ended: Boolean
+    }],
     online: Boolean
 });
 
