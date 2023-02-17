@@ -95,7 +95,7 @@ router.post('/v1/scenes', async (req, res) => {
 // List available scenes
 router.get('/v1/scenes', async function (req, res, next) {
     try {
-        const scenes = await Scene.find(null, { devices: 0, logFiles: 0 });
+        const scenes = await Scene.find(null, { devices: 0, logFiles: 0, relayLogs: 0 });
         console.log(scenes);
         let respData = {
             state: 0,
