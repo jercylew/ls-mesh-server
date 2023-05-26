@@ -30,7 +30,7 @@ const regexTime = /:/ig;
 const router = express.Router();
 router.all('*', cors());
 
-/**********************************Ble devices/**********************************/
+/**********************************Ble devices**********************************/
 
 // Put and Post is both okay for this project(BLE devices), `POST /v1/scenes` create a new scene with received payload,
 // note that the server will create multiple identical scenes (though with unique id) each time when receive
@@ -239,6 +239,7 @@ router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, n
     }
 });
 
+/**********************************Modbus devices**********************************/
 // List modbuses
 router.get('/v1/scenes/:scene_id/modbuses', function (req, res, next) {
     res.send('Implementing ...');
@@ -318,6 +319,57 @@ router.post('/v1/scenes/:scene_id/modbuses/:port/slaves/:slave_id/devices/:addre
             data: {}
         };
         console.log(respData.message);
+        res.json(respData);
+    }
+});
+
+/**********************************Fire Control**********************************/
+router.post('/v1/scenes/fire-control/devices', (req, res, next) => {
+    console.log('/scenes/fire-control/devices, got post payload:', req.body);
+    let respData = {
+        ret_code: "0",
+        ret_msg: "调用成功"
+    };
+
+    try {
+        const lsToken = req.headers['token'];
+
+        //TODO: check user identity
+        console.log('Control device, ls-token: ', lsToken);
+
+        //Save to db
+
+        res.json(respData);
+    } catch (err) {
+        respData = {
+            ret_code: "1",
+            ret_msg: "调用失败"
+        };
+        res.json(respData);
+    }
+});
+
+router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
+    console.log('/scenes/fire-control/devices/data, got post payload:', req.body);
+    let respData = {
+        ret_code: "0",
+        ret_msg: "调用成功"
+    };
+
+    try {
+        const lsToken = req.headers['token'];
+
+        //TODO: check user identity
+        console.log('Control device, ls-token: ', lsToken);
+
+        //Save to db
+
+        res.json(respData);
+    } catch (err) {
+        respData = {
+            ret_code: "1",
+            ret_msg: "调用失败"
+        };
         res.json(respData);
     }
 });
