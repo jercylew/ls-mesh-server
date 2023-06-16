@@ -19,6 +19,7 @@ const commandUtils = require('../lib/command_utils');
 const datetimeUtils = require('../lib/datetime_utils');
 const rtspConf = require('../device-rtsp.json');
 const mqttUtils = require('../lib/mqtt_utils');
+const sceneUtils = require('../lib/scene_utils');
 
 const ffmpegPath = '/opt/ffmpeg-git-20200909-amd64-static/ffmpeg';
 const ffmpegKillCmd = '/usr/bin/pkill ffmpeg';
@@ -333,12 +334,8 @@ router.post('/v1/scenes/fire-control/devices', (req, res, next) => {
 
     try {
         const lsToken = req.headers['token'];
-
         //TODO: check user identity
         console.log('Control device, ls-token: ', lsToken);
-
-        //Save to db
-
         res.json(respData);
     } catch (err) {
         respData = {
@@ -358,11 +355,80 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
 
     try {
         const lsToken = req.headers['token'];
-
         //TODO: check user identity
         console.log('Control device, ls-token: ', lsToken);
 
-        //Save to db
+        const deviceInfo = JSON.parse(message);
+        let devSaveDataBase = {
+            devId: deviceInfo.deviceId,
+            devType: 'fire-water-???',
+            devKind: 'sensor',
+            lastUpdated: new Date()
+        };
+
+        if (!deviceInfo.assetid) {
+            console.log('Processing fire control data error: asset id missing!');
+            respData.ret_code = 1;
+            respData.ret_msg = 'Processing fire control data error: asset id missing!';
+            res.json(respData);
+            return;
+        }
+
+        // To test do not do this so far, it will be opened once used for real products
+        // const pos = deviceInfo.assetid.indexOf('_');
+        // if (pos < 0) {
+        //     console.log('Processing fire control data error: asset id not valid!');
+        //     return;
+        // }
+        const sceneId = '94849c049c-6295e1'; //deviceInfo.assetid.substring(0, pos);
+
+        let dataInfo = '';
+        if (deviceInfo.real) {
+            for (const dataItem of deviceInfo.real) {
+                dataInfo += `${dataItem.s}:${dataItem.v},`;
+
+                if (dataItem.s === 'waterPress') {
+                    devSaveDataBase.devType = 'fire-water-press';
+                }
+            }
+        }
+
+        if (dataInfo === '') {
+            // Try to get values from history data if no realtime data provided
+            /*
+            "history":[
+                {
+                    "s": "waterPress",
+                    "v": [ "0.236", "0.254", "0.254", " 0.256" ],
+                    "t": "2021-7-9 11:01:18",
+                    "d":60,
+                    "m":4
+                }
+            ]
+            */
+            if (deviceInfo.history) {
+                for (const dataItem of deviceInfo.history) {
+                    const len = dataItem.v.length;
+                    dataInfo += `${dataItem.s}:${dataItem.v[len-1]},`; //Take the latest one
+                    if (dataItem.s === 'waterPress') {
+                        devSaveDataBase.devType = 'fire-water-press';
+                    }
+                }
+            }
+        }
+
+        if (dataInfo === '') {
+            console.log('Processing fire control data error: no data info provided!');
+            respData.ret_code = 2;
+            respData.ret_msg = 'Processing fire control data error: no data info provided!';
+            res.json(respData);
+            return;
+        }
+
+        let deviceSaveData = { ...devSaveDataBase };
+        deviceSaveData.dataInfo = dataInfo;
+        deviceSaveData.status = 0; //deviceInfo.online ? 0 : 1
+        sceneUtils.updateDevInfo(sceneId, [deviceSaveData]);
 
         res.json(respData);
     } catch (err) {
