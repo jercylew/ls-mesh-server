@@ -366,7 +366,7 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
             lastUpdated: new Date()
         };
 
-        if (!deviceInfo.assetid) {
+        if (!deviceInfo.assetId) {
             console.log('Processing fire control data error: asset id missing!');
             respData.ret_code = 1;
             respData.ret_msg = 'Processing fire control data error: asset id missing!';
@@ -375,12 +375,12 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
         }
 
         // To test do not do this so far, it will be opened once used for real products
-        // const pos = deviceInfo.assetid.indexOf('_');
+        // const pos = deviceInfo.assetId.indexOf('_');
         // if (pos < 0) {
         //     console.log('Processing fire control data error: asset id not valid!');
         //     return;
         // }
-        const sceneId = '94849c049c-6295e1'; //deviceInfo.assetid.substring(0, pos);
+        const sceneId = '94849c049c-6295e1'; //deviceInfo.assetId.substring(0, pos);
 
         let dataInfo = '';
         if (deviceInfo.real) {
