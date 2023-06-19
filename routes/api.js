@@ -358,7 +358,7 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
         //TODO: check user identity
         console.log('Control device, ls-token: ', lsToken);
 
-        const deviceInfo = JSON.parse(message);
+        const deviceInfo = JSON.parse(req.body);
         let devSaveDataBase = {
             devId: deviceInfo.deviceId,
             devType: 'fire-water-???',
@@ -432,6 +432,7 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
 
         res.json(respData);
     } catch (err) {
+        console.error('Exception occurred when processing fire control data: ', err);
         respData = {
             ret_code: "1",
             ret_msg: "调用失败"
