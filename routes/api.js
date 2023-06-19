@@ -358,7 +358,7 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
         //TODO: check user identity
         console.log('Control device, ls-token: ', lsToken);
 
-        const deviceInfo = JSON.parse(req.body);
+        const deviceInfo = req.body;
         let devSaveDataBase = {
             devId: deviceInfo.deviceId,
             devType: 'fire-water-???',
