@@ -385,11 +385,12 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
         let dataInfo = '';
         if (deviceInfo.real) {
             for (const dataItem of deviceInfo.real) {
-                dataInfo += `${dataItem.s}:${dataItem.v},`;
-
                 if (dataItem.s === 'waterPress') {
                     devSaveDataBase.devType = 'fire-water-press';
                 }
+
+                let valueText = dataItem.s === 'alarm' ? dataItem.v.join('&') : dataItem.v;
+                dataInfo += `${dataItem.s}:${valueText},`;
             }
         }
 
@@ -408,6 +409,9 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
             */
             if (deviceInfo.history) {
                 for (const dataItem of deviceInfo.history) {
+                    if (dataItem.s === 'alarm') { //Do not process alarm messages in history
+                        continue;
+                    }
                     const len = dataItem.v.length;
                     dataInfo += `${dataItem.s}:${dataItem.v[len-1]},`; //Take the latest one
                     if (dataItem.s === 'waterPress') {
