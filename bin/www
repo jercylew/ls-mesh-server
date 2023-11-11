@@ -35,17 +35,17 @@ serverHttp.on('listening', onListeningHttp);
 
 
 //Https server
-const keyFilePath = '/usr/local/ls-apps/cert/www.lengshuotech.com.key';
-const certFilePath = '/usr/local/ls-apps/cert/www.lengshuotech.com.pem';
-const options = {
-  key: fs.readFileSync(keyFilePath),
-  cert: fs.readFileSync(certFilePath)
-};
+// const keyFilePath = '/usr/local/ls-apps/cert/www.lengshuotech.com.key';
+// const certFilePath = '/usr/local/ls-apps/cert/www.lengshuotech.com.pem';
+// const options = {
+//   key: fs.readFileSync(keyFilePath),
+//   cert: fs.readFileSync(certFilePath)
+// };
 
-var serverHttps = https.createServer(options, app)
-serverHttps.listen(3002);
-serverHttps.on('error', onError);
-serverHttps.on('listening', onListeningHttps);
+// var serverHttps = https.createServer(options, app)
+// serverHttps.listen(3002);
+// serverHttps.on('error', onError);
+// serverHttps.on('listening', onListeningHttps);
 
 //Start MQTT client
 mqttUtils.connectMqtt();
