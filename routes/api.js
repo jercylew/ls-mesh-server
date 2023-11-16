@@ -210,10 +210,22 @@ router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, n
             console.error('Unsupported device type');
         }
 
+
+
         if (meshDevCommand) {
             const sceneId = req.params.scene_id;
-            const host_id = sceneId.substring(0, 10);
-            commandUtils.sendCommand(host_id, meshDevCommand);
+            // const host_id = sceneId.substring(0, 10);
+            // commandUtils.sendCommand(host_id, meshDevCommand);
+
+            let cmdJson = {
+                gateway_id: req.body.gateway_id,
+                user_id: req.body.user_id,
+                cmd: 'control',
+                category: 'mesh',  //Mesh, or its devices control
+                params: meshDevCommand, //Mesh command itself
+            };
+
+            mqttUtils.sendHostCmd(sceneId, meshDevCommand);
             respData = {
                 state: 0,
                 message: 'Ok',
