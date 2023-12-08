@@ -392,7 +392,7 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
         //     console.log('Processing fire control data error: asset id not valid!');
         //     return;
         // }
-        const sceneId = '94849c049c-6295e1'; //deviceInfo.assetId.substring(0, pos);
+        const sceneId = 'fb17922233-7cc55f'; //deviceInfo.assetId.substring(0, pos);
 
         let dataInfo = '';
         if (deviceInfo.real) {
