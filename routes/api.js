@@ -20,6 +20,7 @@ const datetimeUtils = require('../lib/datetime_utils');
 const rtspConf = require('../device-rtsp.json');
 const mqttUtils = require('../lib/mqtt_utils');
 const sceneUtils = require('../lib/scene_utils');
+const logUtils = require('../lib/log_utils');
 
 const ffmpegPath = '/opt/ffmpeg-git-20200909-amd64-static/ffmpeg';
 const ffmpegKillCmd = '/usr/bin/pkill ffmpeg';
@@ -360,6 +361,12 @@ router.post('/v1/scenes/fire-control/devices', (req, res, next) => {
 
 router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
     console.log('/scenes/fire-control/devices/data, got post payload:', req.body);
+
+    //Log to file the raw data
+    const nowTimeText = (new Date()).toLocaleTimeString('zh-CN');
+    const messageForLog = `${nowTimeText}     ${req.body}\n`;
+    logUtils.logMessageToFile(messageForLog, `out_fire-control_status_${datetimeUtils.todayDate()}.log`);
+
     let respData = {
         ret_code: "0",
         ret_msg: "调用成功"
@@ -401,7 +408,7 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
                     devSaveDataBase.devType = 'fire-water-press';
                 }
 
-                let valueText = dataItem.s === 'alarm' ? dataItem.v.join('&') : dataItem.v;
+                let valueText = (dataItem.s === 'alarm' || dataItem.s === 'alarmCancel') ? dataItem.v.join(',') : dataItem.v;
                 dataInfo += `${dataItem.s}:${valueText},`;
             }
         }
@@ -421,7 +428,7 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
             */
             if (deviceInfo.history) {
                 for (const dataItem of deviceInfo.history) {
-                    if (dataItem.s === 'alarm') { //Do not process alarm messages in history
+                    if (dataItem.s === 'alarm' || dataItem.s === 'alarmCancel') { //Do not process alarm messages in history
                         continue;
                     }
                     const len = dataItem.v.length;
