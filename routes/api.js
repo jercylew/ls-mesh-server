@@ -195,7 +195,6 @@ router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, n
 
     try {
         const lsToken = req.headers['ls-token'];
-
         //TODO: check user identity
         console.log('Control device, ls-token: ', lsToken);
 
@@ -210,8 +209,6 @@ router.post('/v1/scenes/:scene_id/meshes/:mesh_id/devices/:dev_id', (req, res, n
         else {
             console.error('Unsupported device type');
         }
-
-
 
         if (meshDevCommand) {
             const sceneId = req.params.scene_id;
@@ -297,33 +294,22 @@ router.post('/v1/scenes/:scene_id/modbuses/:port/slaves/:slave_id/devices/:addre
         const lsToken = req.headers['ls-token'];
         console.log('Control device, ls-token: ', lsToken);
 
-        const type = req.body.type;
-        let modbusCtrlCommand = null
-        if (type === 'modbus_control') {
-            modbusCtrlCommand = commandUtils.getModbusCommandData(req);
-        }
-        else {
-            console.error('Unsupported device type');
-        }
+        const modbusCtrlCommand = commandUtils.getModbusCommandData(req);
+        const sceneId = req.params.scene_id;
+        let cmdJson = {
+            gateway_id: sceneId,
+            user_id: req.body.user_id,
+            cmd: 'control',
+            category: 'modbus',
+            params: modbusCtrlCommand,
+        };
 
-        if (modbusCtrlCommand) {
-            const sceneId = req.params.scene_id;
-            const host_id = sceneId.substring(0, 10);
-
-            commandUtils.sendCommand(host_id, modbusCtrlCommand);
-            respData = {
-                state: 0,
-                message: 'Ok',
-                data: {}
-            };
-        }
-        else {
-            respData = {
-                state: 1,
-                message: 'Failed to send command, command not supported by the server!',
-                data: {}
-            };
-        }
+        mqttUtils.sendHostCmd(sceneId, cmdJson);
+        respData = {
+            state: 0,
+            message: 'Ok',
+            data: {}
+        };
 
         res.json(respData);
     } catch (err) {
