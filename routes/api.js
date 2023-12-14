@@ -304,7 +304,7 @@ router.post('/v1/scenes/:scene_id/modbuses/:port/slaves/:slave_id/devices/:addre
             params: modbusCtrlCommand,
         };
 
-        mqttUtils.sendHostCmd(sceneId, cmdJson);
+        mqttUtils.sendHostCmd(sceneId, JSON.stringify(cmdJson));
         respData = {
             state: 0,
             message: 'Ok',
