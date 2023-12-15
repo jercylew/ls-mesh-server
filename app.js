@@ -12,13 +12,14 @@ require('dotenv/config');
 const mogoServerUrl = 'mongodb://127.0.0.1:27017/ls-test?retryWrites=true&w=majority&directConnection=true&serverSelectionTimeoutMS=2000'
 
 
-const indexRouter = require('./routes/index');
-const bebebusAppFrontRouter = require('./routes/bebebus-app-front');
-const bebebusCmsCenterRouter = require('./routes/bebebus-cms');
-const lsCloudPlatformRouter = require('./routes/ls-cloud-platform');
+// const indexRouter = require('./routes/index');
+// const bebebusAppFrontRouter = require('./routes/bebebus-app-front');
+// const bebebusCmsCenterRouter = require('./routes/bebebus-cms');
+// const lsCloudPlatformRouter = require('./routes/ls-cloud-platform');
+// const kaipudunDataPlatformRouter = require('./routes/kaipudun-data-platform');
 const jiulongDataPlatformRouter = require('./routes/jiulong-data-platform');
-const kaipudunDataPlatformRouter = require('./routes/kaipudun-data-platform');
 const lsSchoolSystemRouter = require('./routes/ls-school-system');
+const rhSafeCampusRouter = require('./routes/rh-safe-campus');
 const usersRouter = require('./routes/users');
 const apiRouter = require('./routes/api');
 
@@ -40,12 +41,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 app.use(bodyParser.json())
 
-app.use('/bebebus-app-front', bebebusAppFrontRouter);
-app.use('/bebebus-cms-center', bebebusCmsCenterRouter);
-app.use('/ls-cloud-platform', lsCloudPlatformRouter);
+// app.use('/bebebus-app-front', bebebusAppFrontRouter);
+// app.use('/bebebus-cms-center', bebebusCmsCenterRouter);
+// app.use('/ls-cloud-platform', lsCloudPlatformRouter);
+// app.use('/kaipudun-data-platform', kaipudunDataPlatformRouter);
 app.use('/jiulong-data-platform', jiulongDataPlatformRouter);
-app.use('/kaipudun-data-platform', kaipudunDataPlatformRouter);
 app.use('/ls-school-system', lsSchoolSystemRouter);
+app.use('/rh-safe-campus', rhSafeCampusRouter);
 app.use('/users', usersRouter);
 app.use('/api', apiRouter);
 
