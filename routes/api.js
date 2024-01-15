@@ -350,7 +350,7 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
 
     //Log to file the raw data
     const nowTimeText = (new Date()).toLocaleTimeString('zh-CN');
-    const messageForLog = `${nowTimeText}     ${req.body}\n`;
+    const messageForLog = `${nowTimeText}     ${JSON.stringify(req.body)}\n`;
     logUtils.logMessageToFile(messageForLog, `out_fire-control_status_${datetimeUtils.todayDate()}.log`);
 
     let respData = {
@@ -390,11 +390,16 @@ router.post('/v1/scenes/fire-control/devices/data', (req, res, next) => {
         let dataInfo = '';
         if (deviceInfo.real) {
             for (const dataItem of deviceInfo.real) {
+                if (dataItem.s === 'alarm' || dataItem.s === 'alarmCancel') {
+                    //Ignore this at present
+                    continue
+                }
+
                 if (dataItem.s === 'waterPress') {
                     devSaveDataBase.devType = 'fire-water-press';
                 }
 
-                let valueText = (dataItem.s === 'alarm' || dataItem.s === 'alarmCancel') ? dataItem.v.join(',') : dataItem.v;
+                let valueText = dataItem.v //(dataItem.s === 'alarm' || dataItem.s === 'alarmCancel') ? dataItem.v.join(',') : dataItem.v;
                 dataInfo += `${dataItem.s}:${valueText},`;
             }
         }
